@@ -6,11 +6,11 @@ import re
 import tarfile
 import json
 
-submission_path = "/autograder/submission"
-results_json = "/autograder/results/results.json"
-stdout_path = "/autograder/results/stdout"
+submission_path = "autograder/submission"
+results_json = "autograder/results/results.json"
+stdout_path = "autograder/results/stdout.txt"
 
-node_path = submission_path + "/NodeApp"
+node_path = submission_path + "/all/NodeApp"
 
 def getFiles(path):
 	# Returns files and folders in path
@@ -19,6 +19,13 @@ def getFiles(path):
 		f.extend(filenames)
 		f.extend(dirnames)
 	return f
+
+def getFolders(path):
+	# Returns folders in path
+	f = []
+	for (dirpath, dirnames, filenames) in walk(path):
+		f.extend(dirnames)
+	return f	
 
 def stdout(stdout_path, text):
 	f = open(stdout_path, 'a+')
@@ -47,7 +54,7 @@ def untar(pattern, submission_path, stdout_path):
 		if re.match(pattern, filename, re.IGNORECASE):
 			stdout(stdout_path, "Untar-ring " + filename + " in " + submission_path)
 			tar = tarfile.open(submission_path + "/" + filename)
-			tar.extractall(submission_path + "/")
+			tar.extractall(submission_path + "/all/")
 			tar.close()
 
 def welcome(stdout_path, message):
@@ -58,7 +65,10 @@ welcome(stdout_path, "CIS 550: Submission Validator [" + str(datetime.now()) + "
 score = 0
 if expect(".*\.gz", submission_path, stdout_path): score += 1
 untar(".*\.tar", submission_path, stdout_path)
-if expect("NodeApp", submission_path, stdout_path): score += 1
+if expect("NodeApp", submission_path + "/all", stdout_path) == False:
+	node_path = submission_path + "/all"
+	print(node_path)
+
 if expect("routes", node_path, stdout_path): score += 1
 if expect("index.js", node_path + "/routes", stdout_path): score += 1
 if expect("public", node_path, stdout_path): score += 1

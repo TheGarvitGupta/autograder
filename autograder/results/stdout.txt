@@ -1,12 +1,12 @@
-CIS 550: Submission Validator [2019-02-25 18:14:51.970018]
+CIS 550: Submission Validator [2019-02-25 18:42:36.919804]
 Found .*\.gz in autograder/submission
-Untar-ring hw2-zhengr.tar.gz in autograder/submission
-Found NodeApp in autograder/submission
-Found routes in autograder/submission/NodeApp
-Found index.js in autograder/submission/NodeApp/routes
-Found public in autograder/submission/NodeApp
-Found javascripts in autograder/submission/NodeApp/public
-Found app.js in autograder/submission/NodeApp/public/javascripts
-Found views in autograder/submission/NodeApp
-Found 6 files in NodeApp/views folder
-['recommendations.html', 'login.html', 'dashboard.html', 'reference.html', 'bestof.html', 'template.html']
+Untar-ring hw2-mingcao.tar.gz in autograder/submission
+Found NodeApp in autograder/submission/all
+Found routes in autograder/submission/all/NodeApp
+Found index.js in autograder/submission/all/NodeApp/routes
+Found public in autograder/submission/all/NodeApp
+Found javascripts in autograder/submission/all/NodeApp/public
+Found app.js in autograder/submission/all/NodeApp/public/javascripts
+Found views in autograder/submission/all/NodeApp
+Found 14 files in NodeApp/views folder
+['._dashboard.html', '._template.html', '._recommend.html', '._reference.html', '._login.html', '._bestOf.html', 'login.html', 'posters.html', 'dashboard.html', 'reference.html', 'recommend.html', 'bestOf.html', '._posters.html', 'template.html']
