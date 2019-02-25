@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+
+from os import walk
+from datetime import datetime
+import re
+import tarfile
+import json
+
+submission_path = "/autograder/submission"
+results_json = "/autograder/results/results.json"
+stdout_path = "/autograder/results/stdout"
+
+node_path = submission_path + "/NodeApp"
+
+def getFiles(path):
+	# Returns files and folders in path
+	f = []
+	for (dirpath, dirnames, filenames) in walk(path):
+		f.extend(filenames)
+		f.extend(dirnames)
+	return f
+
+def stdout(stdout_path, text):
+	f = open(stdout_path, 'a+')
+	f.write(str(text) + "\r\n")
+	f.close()
+
+def writeResults(results_json, results):
+	f = open(results_json, 'w+')
+	json.dump(results, f)
+	f.close()
+
+def expect(pattern, path, stdout_path):
+	# Returns true if a file or directory matches a pattern in the given path, false otherwise, prints the error message, and exits
+	files = getFiles(path)
+	for file in files:
+		if re.match(pattern, file, re.IGNORECASE):
+			stdout(stdout_path, "Found " + pattern + " in " + path)
+			return True
+
+	stdout(stdout_path, "Could not find " + pattern + " in " + path)
+	return False
+	
+
+def untar(pattern, submission_path, stdout_path):
+	for filename in getFiles(submission_path):
+		if re.match(pattern, filename, re.IGNORECASE):
+			stdout(stdout_path, "Untar-ring " + filename + " in " + submission_path)
+			tar = tarfile.open(submission_path + "/" + filename)
+			tar.extractall(submission_path + "/")
+			tar.close()
+
+def welcome(stdout_path, message):
+	stdout(stdout_path, message)
+
+welcome(stdout_path, "CIS 550: Submission Validator [" + str(datetime.now()) + "]")
+
+score = 0
+if expect(".*\.gz", submission_path, stdout_path): score += 1
+untar(".*\.tar", submission_path, stdout_path)
+if expect("NodeApp", submission_path, stdout_path): score += 1
+if expect("routes", node_path, stdout_path): score += 1
+if expect("index.js", node_path + "/routes", stdout_path): score += 1
+if expect("public", node_path, stdout_path): score += 1
+if expect("javascripts", node_path + "/public", stdout_path): score += 1
+if expect("app.js", node_path + "/public/javascripts", stdout_path): score += 1
+if expect("views", node_path, stdout_path): score += 1
+stdout(stdout_path, "Found " + str(len(getFiles(node_path + "/views"))) + " files in NodeApp/views folder")
+stdout(stdout_path, str(getFiles(node_path + "/views")))
+
+results = {}
+results["score"] = score
+f = open(stdout_path, 'r')
+results["output"] = f.read()
+f.close()
+writeResults(results_json, results)
